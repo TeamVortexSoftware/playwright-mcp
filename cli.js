@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+console.log('🚀 Using @teamvortexsoftware/vortex-playwright-mcp (FORKED VERSION)');
+
 const { program } = require('playwright-core/lib/utilsBundle');
 const { decorateCommand } = require('playwright/lib/mcp/program');
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vortex Theme Utilities Test</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .modal {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+    }
+    
+    input[type="email"] {
+      width: 300px;
+      padding: 12px;
+      border: 2px solid #ebe6df;
+      border-radius: 8px;
+      font-size: 16px;
+      background: transparent;
+      transition: border-color 0.2s;
+    }
+    
+    input[type="email"]:focus {
+      outline: none;
+      border-color: #03d47c;
+    }
+    
+    button {
+      background: #03d47c;
+      color: white;
+      border: 1px solid #03d47c;
+      padding: 12px 24px;
+      border-radius: 44px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>🎨 Vortex Theme Utilities Test</h1>
+  
+  <div class="test-section">
+    <h2>Test Form (Expensify-like)</h2>
+    <div class="modal">
+      <h3>Sign In</h3>
+      <input type="email" placeholder="Email address" id="testInput">
+      <button id="testButton">Next</button>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Results</h2>
+    <div id="results"></div>
+  </div>
+
+  <script src="vortex-theme-utils.js"></script>
+  
+  <script>
+    const results = document.getElementById('results');
+    
+    function addResult(test, status, value) {
+      const div = document.createElement('div');
+      div.className = `result ${status}`;
+      div.innerHTML = `<strong>${test}:</strong> ${status === 'success' ? '✅' : '❌'} ${value}`;
+      results.appendChild(div);
+    }
+    
+    async function runTests() {
+      try {
+        // Test 1: RGB to Hex
+        const rgbTest = window.vortexRgbToHex('rgb(7, 39, 31)');
+        const expected1 = '#07271F';
+        addResult('vortexRgbToHex', rgbTest === expected1 ? 'success' : 'error', 
+          `Got ${rgbTest}, expected ${expected1}`);
+        
+        // Test 2: RGBA to Hex with alpha
+        const rgbaTest = window.vortexRgbToHex('rgba(0, 0, 0, 0.19)');
+        addResult('vortexRgbToHex (with alpha)', 
+          rgbaTest.startsWith('#000000') ? 'success' : 'error',
+          `Got ${rgbaTest}`);
+        
+        // Test 3: OKLab to RGB
+        const [r, g, b] = window.vortexOklabToRgb(0.7, -0.1, 0.05);
+        addResult('vortexOklabToRgb', 
+          r >= 0 && r <= 255 ? 'success' : 'error',
+          `RGB(${r}, ${g}, ${b})`);
+        
+        // Test 4: Extract form field border color (CRITICAL TEST)
+        addResult('Starting border color test', 'success', 'Will blur input and wait 200ms...');
+        
+        const borderResult = await window.vortexExtractFormFieldBorderColor('input[type="email"]');
+        addResult('vortexExtractFormFieldBorderColor', 
+          borderResult.color === '#EBE6DF' ? 'success' : 'error',
+          `Got ${borderResult.color}, expected #EBE6DF (resting state)`);
+        
+        // Test 5: Extract form container background
+        const containerResult = await window.vortexExtractFormContainerBackground('input[type="email"]');
+        addResult('vortexExtractFormContainerBackground', 
+          containerResult.color === '#FFFFFF' ? 'success' : 'error',
+          `Got ${containerResult.color}, expected #FFFFFF (modal background)`);
+        
+        addResult('All tests completed', 'success', '');
+        
+      } catch (error) {
+        addResult('Test Error', 'error', error.message);
+        console.error('Test error:', error);
+      }
+    }
+    
+    // Run tests after page loads
+    window.addEventListener('load', () => {
+      setTimeout(runTests, 500);
+    });
+  </script>
+</body>
+</html>
+

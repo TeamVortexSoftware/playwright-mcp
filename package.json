@@ -1,5 +1,5 @@
 {
-  "name": "@playwright/mcp",
+  "name": "@teamvortexsoftware/vortex-playwright-mcp",
   "version": "0.0.45",
   "description": "Playwright Tools for MCP",
   "repository": {
